@@ -9,6 +9,8 @@ import android.view.ViewGroup
 import android.widget.Toast // Para mostrar mensajes temporales
 
 import com.example.mitiendaonline.R // Importa la clase R para acceder a los recursos (IDs, layouts)
+import com.example.mitiendaonline.data.dao.daoUsuario
+import com.example.mitiendaonline.data.model.Usuario
 import com.example.mitiendaonline.databinding.FragmentRegistroBinding // Importa la clase de binding (FragmentRegistroBinding)
 
 // Importa el LoginFragment al que queremos navegar de regreso
@@ -44,50 +46,48 @@ class RegistroFragment : Fragment() {
 
         // Configurar OnClickListener para el botón de Registrarse
         binding.buttonRegister.setOnClickListener {
-            // Aquí iría la lógica real de validación y envío de datos de registro (más adelante, con backend)
-            // Puedes obtener los datos de los campos así (ejemplo):
-            // val nombre = binding.editTextFullName.text.toString()
-            // val email = binding.editTextEmail.text.toString()
-            // val password = binding.editTextPassword.text.toString()
-            // val confirmPassword = binding.editTextConfirmPassword.text.toString()
 
-            // --- Simulación de registro exitoso ---
-            // Por ahora, mostramos un mensaje y volvemos a la pantalla de Login
+            val nombre = binding.editTextFullName.text.toString().trim()
+            val correo = binding.editTextEmail.text.toString().trim()
+            val contraseña = binding.editTextPassword.text.toString()
+            val confirmarContraseña = binding.editTextConfirmPassword.text.toString()
 
-            // Mostrar un mensaje de confirmación temporal
-            Toast.makeText(requireContext(), "¡Registro exitoso!", Toast.LENGTH_SHORT).show()
+            if (nombre.isEmpty() || correo.isEmpty() || contraseña.isEmpty() || confirmarContraseña.isEmpty()) {
+                Toast.makeText(requireContext(), "Por favor, completa todos los campos", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
 
-            // Navegar de regreso al LoginFragment.
-            // popBackStack() es útil aquí porque simplemente remueve este Fragment (Registro)
-            // de la pila de atrás y revela el Fragment anterior (Login).
-            requireActivity().supportFragmentManager.popBackStack()
+            if (contraseña != confirmarContraseña) {
+                Toast.makeText(requireContext(), "Las contraseñas no coinciden", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
 
-            // Alternativa (menos ideal tras un registro exitoso si Login ya está en la pila):
-            // Usar replace también funciona, pero añade una nueva instancia de LoginFragment
-            // val fragmentManager = requireActivity().supportFragmentManager
-            // fragmentManager.beginTransaction()
-            //    .replace(R.id.fragment_container, LoginFragment())
-            //    .commit()
+            val dao = daoUsuario(requireContext())
+            val existente = dao.getUserByEmail(correo)
+
+            if (existente != null) {
+                Toast.makeText(requireContext(), "Este correo ya está registrado", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val usuario = Usuario(nombre = nombre, correo = correo, contraseña = contraseña)
+            val insertado = dao.insertar(usuario)
+
+            if (insertado) {
+                Toast.makeText(requireContext(), "¡Registro exitoso!", Toast.LENGTH_SHORT).show()
+                requireActivity().supportFragmentManager.popBackStack()
+            } else {
+                Toast.makeText(requireContext(), "Error al registrar. Intenta de nuevo.", Toast.LENGTH_SHORT).show()
+            }
+
         }
 
-        // Configurar OnClickListener para el botón "Ir a Login" (si ya tiene cuenta)
         binding.buttonGoToLogin.setOnClickListener {
-            // Navegar de regreso al LoginFragment
-            // Aquí podemos usar popBackStack() porque Login está justo debajo
             requireActivity().supportFragmentManager.popBackStack()
-
-            // Alternativa: usar replace (como hicimos al ir de Login a Registro)
-            // val fragmentManager = requireActivity().supportFragmentManager
-            // fragmentManager.beginTransaction()
-            //     .replace(R.id.fragment_container, LoginFragment())
-            //     // No añadimos addToBackStack(null) aquí si ya estamos volviendo a un fragment existente
-            //     .commit()
         }
-    }
 
-    // Limpiar la referencia del binding cuando la vista se destruye
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }
+
+
+

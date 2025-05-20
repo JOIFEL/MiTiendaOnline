@@ -6,10 +6,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBackground"
-    tools:context=".fragments.ProductosFragment"> <TextView
+    tools:context=".fragments.ProductosFragment">
+
+    <TextView
     android:id="@+id/textViewProductsTitle"
     android:layout_width="0dp"
-    android:layout_height="?attr/actionBarSize" android:text="Catálogo de Productos"
+    android:layout_height="?attr/actionBarSize"
+    android:text="Catálogo de Productos"
     android:textSize="20sp"
     android:textStyle="bold"
     android:gravity="center_vertical"
@@ -38,9 +41,10 @@
         android:id="@+id/recyclerViewProducts"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/textViewProductsTitle"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:listitem="@layout/item_product" /> </androidx.constraintlayout.widget.ConstraintLayout>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewProductsTitle"
+        tools:listitem="@layout/item_product" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

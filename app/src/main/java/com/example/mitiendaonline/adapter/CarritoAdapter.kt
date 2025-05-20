@@ -3,9 +3,9 @@ package com.example.mitiendaonline.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.Toast // Para mostrar mensajes temporales al eliminar (demo)
 import androidx.recyclerview.widget.RecyclerView
-import com.example.mitiendaonline.data.CartItem // Importa la data class CartItem
+import com.example.mitiendaonline.R
+import com.example.mitiendaonline.data.model.CartItem // Importa la data class CartItem
 import com.example.mitiendaonline.databinding.ItemCartBinding // Importa la clase de binding para item_cart.xml
 
 // Declaramos la clase CarritoAdapter, hereda de RecyclerView.Adapter
@@ -23,8 +23,13 @@ class CarritoAdapter(
 
         // Método para "enlazar" (bind) los datos de un CartItem con las vistas del ViewHolder
         fun bind(cartItem: CartItem) {
-            // Usamos binding para acceder a las vistas de item_cart.xml
-            binding.imageViewCartItemImage.setImageResource(cartItem.producto.imagenResId) // Imagen del producto
+            val uriString = cartItem.producto.imagenUri
+            if (uriString != null) {
+                binding.imageViewCartItemImage.setImageURI(android.net.Uri.parse(uriString))
+            } else {
+                binding.imageViewCartItemImage.setImageResource(R.drawable.ic_launcher_foreground) // Reemplaza por tu recurso default
+            }
+
             binding.textViewCartItemName.text = cartItem.producto.nombre // Nombre del producto
             binding.textViewCartItemPricePerUnit.text = "Precio: $${cartItem.producto.precio}" // Precio unitario
             binding.textViewCartItemQuantity.text = "Cantidad: ${cartItem.cantidad}" // Cantidad

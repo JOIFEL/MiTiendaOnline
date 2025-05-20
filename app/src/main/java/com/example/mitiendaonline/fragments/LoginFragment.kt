@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Toast // Podríamos usar esto para mensajes temporales (opcional)
 
 import com.example.mitiendaonline.R // Importa la clase R para acceder a los recursos (IDs, layouts)
+import com.example.mitiendaonline.data.dao.daoUsuario
 import com.example.mitiendaonline.databinding.FragmentLoginBinding // Importa la clase de binding para este Fragment (FragmentLoginBinding)
 
 // Importa los Fragments a los que queremos navegar
@@ -46,24 +47,54 @@ class LoginFragment : Fragment() {
 
         // Configurar OnClickListener para el botón de Iniciar Sesión
         binding.buttonLogin.setOnClickListener {
-            // Aquí iría la lógica real de validación de usuario y contraseña (más adelante, con backend)
-            // Puedes obtener el texto de los campos así (ejemplo, no funcional):
-            // val email = binding.editTextEmailOrUser.text.toString()
-            // val password = binding.editTextPassword.text.toString()
+            val correo = binding.editTextEmailOrUser.text.toString().trim()
+            val contraseña = binding.editTextPassword.text.toString()
 
-            // Por ahora, simulamos un inicio de sesión exitoso y navegamos a la lista de productos
 
-            // Obtenemos el FragmentManager de la Activity contenedora
-            val fragmentManager = requireActivity().supportFragmentManager
+            if (correo.isEmpty() || contraseña.isEmpty()) {
+                Toast.makeText(requireContext(), "Por favor, completa todos los campos", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
 
-            // Iniciamos una transacción para reemplazar el Fragment actual por ProductosFragment
-            fragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, ProductosFragment()) // Reemplaza el contenido del contenedor
-                .addToBackStack(null) // Permite volver a este Fragment con el botón atrás
-                .commit() // Ejecuta la transacción
+            val dao = daoUsuario(requireContext())
+            val usuario = dao.getUserByEmail(correo)
 
-            // Opcional: Mostrar un mensaje temporal
-            // Toast.makeText(requireContext(), "Iniciando sesión...", Toast.LENGTH_SHORT).show()
+            if (usuario == null) {
+                Toast.makeText(requireContext(), "El correo no está registrado", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (usuario.contraseña != contraseña) {
+                Toast.makeText(requireContext(), "Contraseña incorrecta", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            Toast.makeText(requireContext(), "Bienvenido, ${usuario.nombre}!", Toast.LENGTH_SHORT).show()
+
+
+            if (usuario != null && usuario.contraseña == contraseña) {
+                Toast.makeText(requireContext(), "Bienvenido ${usuario.nombre}", Toast.LENGTH_SHORT).show()
+
+                when (usuario.rol) {
+                    "admin" -> {
+                        // Ir a fragmento de administración
+                        parentFragmentManager.beginTransaction()
+                            .replace(R.id.fragment_container, AdminFragment())
+                            .commit()
+                    }
+                    "cliente" -> {
+                        // Ir a vista de productos
+                        parentFragmentManager.beginTransaction()
+                            .replace(R.id.fragment_container, ProductosFragment())
+                            .commit()
+                    }
+                    else -> {
+                        Toast.makeText(requireContext(), "Rol desconocido", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } else {
+                Toast.makeText(requireContext(), "Credenciales incorrectas", Toast.LENGTH_SHORT).show()
+            }
         }
 
         // Configurar OnClickListener para el botón "Ir a Registro"

@@ -6,12 +6,15 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="8dp"
-    android:background="@color/colorSurface"> <ImageView
+    android:background="@color/colorSurface">
+
+    <ImageView
     android:id="@+id/imageViewCartItemImage"
     android:layout_width="72dp"
     android:layout_height="72dp"
     android:scaleType="centerCrop"
-    android:src="@drawable/placeholder_image" android:contentDescription="Imagen del producto en carrito"
+    android:src="@drawable/placeholder_image"
+    android:contentDescription="Imagen del producto en carrito"
     app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintBottom_toBottomOf="parent" />
