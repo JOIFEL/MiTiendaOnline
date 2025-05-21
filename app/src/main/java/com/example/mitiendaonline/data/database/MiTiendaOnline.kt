@@ -3,8 +3,6 @@ package com.example.mitiendaonline.data.database
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import com.example.mitiendaonline.data.dao.daoUsuario
-import com.example.mitiendaonline.data.model.Usuario
 
 
 class MiTiendaOnline(context: Context) : SQLiteOpenHelper(context, DATABASE_NOMBRE, null, DATABASE_VERSION) {

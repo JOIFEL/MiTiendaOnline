@@ -14,7 +14,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.mitiendaonline"
+        applicationId = "com.nativas.mitiendaonline"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
@@ -55,6 +55,16 @@ dependencies {
     implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
     implementation ("androidx.fragment:fragment-ktx:1.7.0")
     implementation ("com.google.code.gson:gson:2.10.1")
+
+    //Gooogle
+    implementation("androidx.credentials:credentials:1.6.0-alpha01")
+    implementation("androidx.credentials:credentials-play-services-auth:1.6.0-alpha01")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
+
+
+
+
+
 
 
     testImplementation(libs.junit)
