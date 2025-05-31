@@ -13,6 +13,6 @@
     <color name="button_text_primary">@color/colorOnSecondary</color>
     <color name="input_border_color">#BDBDBD</color> <color name="input_hint_color">#9E9E9E</color>
     <color name="colorAccent">#1185FF</color>
-
+    <color name="colorDivider">#E0E0E0</color>
 
 </resources>

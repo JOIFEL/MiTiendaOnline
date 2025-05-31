@@ -1,82 +1,153 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="8dp"
-    android:background="@color/colorSurface">
+    android:layout_marginVertical="4dp"
+    android:layout_marginHorizontal="4dp"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="1dp"
+    app:cardBackgroundColor="@color/colorSurface"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground">
 
-    <ImageView
-    android:id="@+id/imageViewCartItemImage"
-    android:layout_width="72dp"
-    android:layout_height="72dp"
-    android:scaleType="centerCrop"
-    android:src="@drawable/placeholder_image"
-    android:contentDescription="Imagen del producto en carrito"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintBottom_toBottomOf="parent" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="8dp">
 
-    <TextView
-        android:id="@+id/textViewCartItemName"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="8dp"
-        android:text="Nombre del Producto Largo para Carrito" android:textSize="16sp"
-        android:textStyle="bold"
-        android:textColor="@color/text_color_primary"
-        app:layout_constraintTop_toTopOf="@+id/imageViewCartItemImage"
-        app:layout_constraintStart_toEndOf="@+id/imageViewCartItemImage"
-        app:layout_constraintEnd_toStartOf="@+id/imageViewRemoveItem" />
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/imageViewCartItemImage"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginStart="8dp"
+            android:contentDescription="Imagen del producto en carrito"
+            android:scaleType="centerCrop"
+            android:src="@drawable/placeholder_image"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"
+            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize8dp" />
 
-    <TextView
-        android:id="@+id/textViewCartItemPricePerUnit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:layout_marginStart="16dp"
-        android:text="Precio: $XX.XX" android:textSize="14sp"
-        android:textColor="@color/text_color_secondary"
-        app:layout_constraintTop_toBottomOf="@+id/textViewCartItemName"
-        app:layout_constraintStart_toEndOf="@+id/imageViewCartItemImage"/>
+        <TextView
+            android:id="@+id/textViewCartItemName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:text="Nombre del Producto Largo para Carrito"
+            android:textColor="@color/text_color_primary"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/buttonRemoveItem"
+            app:layout_constraintStart_toEndOf="@+id/imageViewCartItemImage"
+            app:layout_constraintTop_toTopOf="@+id/imageViewCartItemImage" />
 
-    <TextView
-        android:id="@+id/textViewCartItemQuantity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:layout_marginStart="16dp"
-        android:text="Cantidad: 1" android:textSize="14sp"
-        android:textColor="@color/text_color_primary"
-        app:layout_constraintTop_toBottomOf="@+id/textViewCartItemPricePerUnit"
-        app:layout_constraintStart_toEndOf="@+id/imageViewCartItemImage"/>
-    <TextView
-        android:id="@+id/textViewCartItemSubtotal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:layout_marginStart="16dp"
-        android:text="Subtotal: $XX.XX" android:textSize="14sp"
-        android:textStyle="bold"
-        android:textColor="@color/colorPrimaryVariant"
-        app:layout_constraintTop_toBottomOf="@+id/textViewCartItemQuantity"
-        app:layout_constraintStart_toEndOf="@+id/imageViewCartItemImage"/>
+        <TextView
+            android:id="@+id/textViewCartItemPricePerUnit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="8dp"
+            android:text="Precio unitario: $ 0,00 COP"
+            android:textColor="@color/text_color_secondary"
+            android:textSize="13sp"
+            app:layout_constraintEnd_toStartOf="@+id/buttonRemoveItem"
+            app:layout_constraintStart_toEndOf="@+id/imageViewCartItemImage"
+            app:layout_constraintTop_toBottomOf="@+id/textViewCartItemName"
+            tools:text="Precio unitario: $ 12.500 COP" />
 
+        <LinearLayout
+            android:id="@+id/layoutQuantitySelector"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/quantity_selector_background"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="6dp"
+            android:paddingVertical="2dp"
+            app:layout_constraintStart_toEndOf="@+id/imageViewCartItemImage"
+            app:layout_constraintTop_toBottomOf="@+id/textViewCartItemPricePerUnit">
 
-    <ImageView
-        android:id="@+id/imageViewRemoveItem"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginEnd="8dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:padding="8dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/ic_delete" android:contentDescription="Eliminar ítem del carrito"
-        app:tint="@color/colorError" app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintVertical_bias="0.5" /> </androidx.constraintlayout.widget.ConstraintLayout>
+            <ImageView
+                android:id="@+id/buttonMinus"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:contentDescription="Disminuir cantidad"
+                android:focusable="true"
+                android:src="@drawable/ic_remove"
+                app:tint="@color/colorOnPrimary" />
+
+            <TextView
+                android:id="@+id/textViewQuantity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:gravity="center"
+                android:minWidth="24dp"
+                android:text="1"
+                android:textColor="@color/colorOnPrimary"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/buttonPlus"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:contentDescription="Aumentar cantidad"
+                android:focusable="true"
+                android:src="@drawable/ic_add"
+                app:tint="@color/colorOnPrimary" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/textViewCartItemSubtotal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="Subtotal: $ 0,00 COP"
+            android:textColor="@color/colorPrimaryVariant"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/buttonRemoveItem"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/imageViewCartItemImage"
+            app:layout_constraintTop_toBottomOf="@+id/layoutQuantitySelector"
+            app:layout_constraintVertical_bias="0.0"
+            tools:text="Subtotal: $ 25.000 COP" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonRemoveItem"
+            style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="8dp"
+            android:contentDescription="Eliminar ítem del carrito"
+            app:icon="@drawable/ic_delete"
+            app:iconGravity="textStart"
+            app:iconSize="24dp"
+            app:iconTint="@color/colorError"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

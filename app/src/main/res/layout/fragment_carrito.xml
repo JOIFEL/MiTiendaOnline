@@ -6,147 +6,185 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBackground"
-    tools:context="CarritoFragment"> <TextView
-    android:id="@+id/textViewCartTitle"
-    android:layout_width="0dp"
-    android:layout_height="?attr/actionBarSize" android:text="Carrito de Compras"
-    android:textSize="20sp"
-    android:textStyle="bold"
-    android:gravity="center_vertical"
-    android:paddingStart="16dp"
-    android:paddingEnd="16dp"
-    android:textColor="@color/colorOnPrimary"
-    android:background="@color/colorPrimary"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"/>
+    tools:context="CarritoFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/headerLayout"
+        android:layout_width="0dp"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:elevation="4dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:id="@+id/textViewCartTitle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="Carrito de Compras"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textColor="@color/colorOnPrimary"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewCartItems"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/guidelineBottomSummary"
+        android:paddingHorizontal="8dp"
+        android:clipToPadding="false"
+        android:contentDescription="Lista de productos en el carrito de compras" app:layout_constraintBottom_toTopOf="@+id/layoutSummary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewCartTitle"
+        app:layout_constraintTop_toBottomOf="@+id/headerLayout"
         tools:listitem="@layout/item_cart" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guidelineBottomSummary"
+    <TextView
+        android:id="@+id/textViewEmptyCart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_end="224dp" />
+        android:text="Tu carrito está vacío. ¡Añade productos!"
+        android:textColor="@color/text_color_secondary"
+        android:textSize="18sp"
+        android:gravity="center"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="@+id/recyclerViewCartItems"
+        app:layout_constraintBottom_toBottomOf="@+id/recyclerViewCartItems"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:visibility="visible"/>
 
-    <LinearLayout
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/layoutSummary"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/colorSurface"
-        android:orientation="vertical"
-        android:padding="16dp"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginBottom="12dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="4dp"
+        app:cardBackgroundColor="@color/colorSurface"
         app:layout_constraintBottom_toTopOf="@+id/buttonCheckout"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guidelineBottomSummary"
-        app:layout_constraintVertical_bias="0.0">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:text="Resumen de la Orden"
-            android:textColor="@color/text_color_primary"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+        app:layout_constraintStart_toStartOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical"
+            android:padding="16dp">
 
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Subtotal:"
-                android:textColor="@color/text_color_primary" />
-
-            <TextView
-                android:id="@+id/textViewSubtotal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="$0.00"
-                android:textColor="@color/text_color_primary" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Impuestos (IVA):"
-                android:textColor="@color/text_color_primary" />
-
-            <TextView
-                android:id="@+id/textViewTax"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="$0.00"
-                android:textColor="@color/text_color_primary" />
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:background="@android:color/darker_gray" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Total:"
+                android:layout_marginBottom="12dp"
+                android:text="Resumen de la Orden"
                 android:textColor="@color/text_color_primary"
-                android:textSize="18sp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/textViewTotal"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="$0.00"
-                android:textColor="@color/text_color_primary"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:orientation="horizontal"
+                android:layout_marginBottom="4dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Subtotal:"
+                    android:textColor="@color/text_color_primary"
+                    android:textSize="16sp"/>
+
+                <TextView
+                    android:id="@+id/textViewSubtotal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="$ 0,00 COP"
+                    android:textColor="@color/text_color_primary"
+                    android:textSize="16sp"
+                    tools:text="$ 125.000 COP" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="4dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Impuestos (IVA):"
+                    android:textColor="@color/text_color_primary"
+                    android:textSize="16sp"/>
+
+                <TextView
+                    android:id="@+id/textViewTax"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="$ 0,00 COP"
+                    android:textColor="@color/text_color_primary"
+                    android:textSize="16sp"
+                    tools:text="$ 23.750 COP" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1.5dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:background="@color/colorDivider" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Total:"
+                    android:textColor="@color/text_color_primary"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textViewTotal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="$ 0,00 COP"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    tools:text="$ 148.750 COP" />
+            </LinearLayout>
+
         </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
-    </LinearLayout>
-
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonCheckout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:padding="16dp"
         android:text="Proceder al Pago"
         android:textSize="18sp"
-        android:backgroundTint="@color/button_background_primary"
-        android:textColor="@color/button_text_primary"
+        android:textStyle="bold"
+        android:paddingVertical="16dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="16dp"
+        app:cornerRadius="12dp"
+        app:backgroundTint="@color/colorPrimary"
+        android:textColor="@color/colorOnPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

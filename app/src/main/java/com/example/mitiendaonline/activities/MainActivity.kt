@@ -34,10 +34,12 @@ class MainActivity : AppCompatActivity() {
 
         if (adminExistente == null) {
             val admin = Usuario(
+                id = 0,
                 nombre = "Administrador",
                 correo = "admin@admin.com",
                 contraseña = "admin123",
                 rol = "admin"
+
             )
             dao.insertar(admin)
         }

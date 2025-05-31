@@ -12,8 +12,20 @@
         <item name="colorError">@color/colorError</item>
         <item name="colorOnError">@color/colorOnError</item>
         <item name="android:colorBackground">@color/colorBackground</item> <item name="colorOnBackground">@color/colorOnBackground</item>
+    </style>
 
+    <style name="ShapeAppearanceOverlay.App.CornerSize8dp" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
     </style>
 
     <style name="Theme.MiTiendaOnline" parent="Base.Theme.MiTiendaOnline" />
+
+    <style name="ShapeAppearanceOverlay.App.CornerSizeBottomLeftRight8dp" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">0dp</item>
+        <item name="cornerSizeTopRight">0dp</item>
+        <item name="cornerSizeBottomLeft">8dp</item>
+        <item name="cornerSizeBottomRight">8dp</item>
+    </style>
 </resources>

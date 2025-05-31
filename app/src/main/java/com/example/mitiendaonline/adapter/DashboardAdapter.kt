@@ -28,7 +28,7 @@ class DashboardAdapter(private val listaProductos: MutableList<Producto>) :
             binding.textViewProductName.text = producto.nombre
             binding.textViewProductPrice.text = "$${producto.precio}"
 
-            binding.imageViewDelete.setOnClickListener {
+            binding.buttonDelete.setOnClickListener {
                 val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
                     // Elimina de la base de datos
@@ -40,7 +40,7 @@ class DashboardAdapter(private val listaProductos: MutableList<Producto>) :
                 }
             }
 
-            binding.imageViewEdit.setOnClickListener {
+            binding.buttonEdit.setOnClickListener {
 
                 val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
