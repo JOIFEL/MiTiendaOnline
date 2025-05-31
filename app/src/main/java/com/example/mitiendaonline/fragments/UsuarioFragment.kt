@@ -4,7 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,13 +15,19 @@ import com.example.mitiendaonline.R
 import com.example.mitiendaonline.adapter.UsuarioAdapter
 import com.example.mitiendaonline.data.dao.daoUsuario
 import com.example.mitiendaonline.data.model.Usuario
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
+import androidx.appcompat.app.AlertDialog
+import com.google.android.material.button.MaterialButton
 
 class UsuarioFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: UsuarioAdapter
-    private lateinit var btnAgregar: Button
+    private lateinit var btnAgregar: MaterialButton
     private val listaUsuarios = mutableListOf<Usuario>()
+
+    private val ROLES = listOf("cliente", "admin")
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,15 +42,16 @@ class UsuarioFragment : Fragment() {
         adapter = UsuarioAdapter(listaUsuarios,
             onEditar = { usuario ->
                 if (usuario.correo == "admin@admin.com") {
-                    Toast.makeText(requireContext(), "Este usuario no puede ser editado", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Este usuario no puede ser editado.", Toast.LENGTH_SHORT).show()
                 } else {
                     mostrarDialogoEditarUsuario(usuario)
                 }
             },
             onEliminar = { usuario ->
+                // **También considera bloquear la eliminación para usuarios de Google si es necesario**
                 if (usuario.correo == "admin@admin.com") {
-                    Toast.makeText(requireContext(), "Este usuario no puede ser eliminado", Toast.LENGTH_SHORT).show()
-                }else {
+                    Toast.makeText(requireContext(), "Este usuario no puede ser eliminado.", Toast.LENGTH_SHORT).show()
+                } else {
                     val dao = daoUsuario(requireContext())
                     val eliminado = dao.eliminarUsuario(usuario.id)
                     if (eliminado) {
@@ -73,6 +81,11 @@ class UsuarioFragment : Fragment() {
         return view
     }
 
+    override fun onResume() {
+        super.onResume()
+        cargarUsuarios() // Recargar usuarios para reflejar posibles cambios (añadir/editar/eliminar)
+    }
+
     private fun cargarUsuarios() {
         listaUsuarios.clear()
         listaUsuarios.addAll(daoUsuario(requireContext()).obtenerTodosLosUsuarios())
@@ -81,107 +94,174 @@ class UsuarioFragment : Fragment() {
 
     private fun mostrarDialogoAgregarUsuario() {
         val inflater = LayoutInflater.from(requireContext())
-        val view = inflater.inflate(R.layout.dialog_usuario, null)
+        val dialogView = inflater.inflate(R.layout.dialog_usuario, null)
 
-        val etNombre = view.findViewById<android.widget.EditText>(R.id.etNombre)
-        val etCorreo = view.findViewById<android.widget.EditText>(R.id.etCorreo)
-        val etContraseña = view.findViewById<android.widget.EditText>(R.id.etContraseña)
-        val spinnerRol = view.findViewById<android.widget.Spinner>(R.id.spinnerRol)
+        val tilNombre = dialogView.findViewById<TextInputLayout>(R.id.tilNombre)
+        val etNombre = dialogView.findViewById<TextInputEditText>(R.id.etNombre)
+        val tilCorreo = dialogView.findViewById<TextInputLayout>(R.id.tilCorreo)
+        val etCorreo = dialogView.findViewById<TextInputEditText>(R.id.etCorreo)
+        val tilContrasena = dialogView.findViewById<TextInputLayout>(R.id.tilContrasena)
+        val etContrasena = dialogView.findViewById<TextInputEditText>(R.id.etContrasena)
+        val tilConfirmarContrasena = dialogView.findViewById<TextInputLayout>(R.id.tilConfirmarContrasena)
+        val etConfirmarContrasena = dialogView.findViewById<TextInputEditText>(R.id.etConfirmarContrasena)
 
-        // Configurar spinner de roles ANTES del AlertDialog
-        val roles = listOf("admin", "usuario")
-        val adapterSpinner = android.widget.ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, roles)
-        adapterSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerRol.adapter = adapterSpinner
+        val tilRol = dialogView.findViewById<TextInputLayout>(R.id.tilRol)
+        val autoCompleteTextViewRol = dialogView.findViewById<AutoCompleteTextView>(R.id.autoCompleteTextViewRol)
 
-        // Mostrar diálogo
-        androidx.appcompat.app.AlertDialog.Builder(requireContext())
-            .setTitle("Agregar Usuario")
-            .setView(view)
-            .setPositiveButton("Agregar") { _, _ ->
-                val nombre = etNombre.text.toString().trim()
-                val correo = etCorreo.text.toString().trim()
-                val contraseña = etContraseña.text.toString().trim()
-                val rol = spinnerRol.selectedItem.toString().lowercase()
+        val btnGuardar = dialogView.findViewById<MaterialButton>(R.id.btnGuardar)
+        val btnCancelar = dialogView.findViewById<MaterialButton>(R.id.btnCancelar)
 
-                if (nombre.isNotEmpty() && correo.isNotEmpty() && contraseña.isNotEmpty()) {
-                    if (correo == "admin@admin.com") {
-                        Toast.makeText(requireContext(), "No puedes crear otro usuario admin por defecto", Toast.LENGTH_SHORT).show()
-                        return@setPositiveButton
-                    }
+        val adapterRoles = ArrayAdapter(requireContext(), R.layout.list_item_dropdown, ROLES)
+        autoCompleteTextViewRol.setAdapter(adapterRoles)
+        autoCompleteTextViewRol.setText(ROLES[0], false)
 
-                    val nuevoUsuario = Usuario(0, nombre, correo, contraseña, rol)
+        val alertDialog = AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .create()
+
+        btnGuardar.setOnClickListener {
+            val nombre = etNombre.text.toString().trim()
+            val correo = etCorreo.text.toString().trim()
+            val contraseña = etContrasena.text.toString().trim()
+            val confirmarContraseña = etConfirmarContrasena.text.toString().trim()
+            val rol = autoCompleteTextViewRol.text.toString().lowercase()
+
+            var isValid = true
+
+            if (nombre.isEmpty()) { tilNombre.error = "El nombre es obligatorio"; isValid = false } else { tilNombre.error = null }
+            if (correo.isEmpty()) { tilCorreo.error = "El correo es obligatorio"; isValid = false }
+            else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches()) { tilCorreo.error = "Formato de correo no válido"; isValid = false }
+            else { tilCorreo.error = null }
+            if (contraseña.isEmpty()) { tilContrasena.error = "La contraseña es obligatoria"; isValid = false }
+            else if (contraseña.length < 6) { tilContrasena.error = "La contraseña debe tener al menos 6 caracteres"; isValid = false }
+            else { tilContrasena.error = null }
+            if (confirmarContraseña.isEmpty()) { tilConfirmarContrasena.error = "Confirma la contraseña"; isValid = false }
+            else if (contraseña != confirmarContraseña) { tilConfirmarContrasena.error = "Las contraseñas no coinciden"; isValid = false }
+            else { tilConfirmarContrasena.error = null }
+            if (rol.isEmpty() || !ROLES.contains(rol)) { tilRol.error = "Debes seleccionar un rol"; isValid = false } else { tilRol.error = null }
+
+            if (isValid) {
+                // **Verificación para admin@admin.com en la creación (Prioridad 4)**
+                if (correo == "admin@admin.com") {
+                    Toast.makeText(requireContext(), "No puedes crear un usuario con el correo admin por defecto.", Toast.LENGTH_SHORT).show()
+                } else {
+                    val nuevoUsuario = Usuario(0, nombre, correo, contraseña, rol, isGoogleUser = false) // Nuevo usuario no es de Google por defecto
                     val dao = daoUsuario(requireContext())
 
                     if (dao.existeCorreo(correo)) {
-                        Toast.makeText(requireContext(), "El correo ya está en uso", Toast.LENGTH_SHORT).show()
+                        tilCorreo.error = "El correo ya está en uso"
                     } else {
-                        val insertado = dao.insertar(nuevoUsuario)
-                        if (insertado) {
+                        val insertadoId = dao.insertar(nuevoUsuario)
+                        if (insertadoId != 1L) {
                             Toast.makeText(requireContext(), "Usuario agregado", Toast.LENGTH_SHORT).show()
                             cargarUsuarios()
+                            alertDialog.dismiss()
                         } else {
                             Toast.makeText(requireContext(), "Error al agregar usuario", Toast.LENGTH_SHORT).show()
                         }
                     }
-                } else {
-                    Toast.makeText(requireContext(), "Todos los campos son obligatorios", Toast.LENGTH_SHORT).show()
                 }
             }
-            .setNegativeButton("Cancelar", null)
-            .show()
+        }
+
+        btnCancelar.setOnClickListener {
+            alertDialog.dismiss()
+        }
+
+        alertDialog.show()
     }
 
-
     private fun mostrarDialogoEditarUsuario(usuario: Usuario) {
-        val inflater = LayoutInflater.from(requireContext())
-        val view = inflater.inflate(R.layout.dialog_usuario, null)
+        // La verificación de isGoogleUser ya se realiza en la lambda onEditar del adaptador.
+        // Aquí solo se muestra el diálogo si la verificación previa fue exitosa.
 
-        val etNombre = view.findViewById<android.widget.EditText>(R.id.etNombre)
-        val etCorreo = view.findViewById<android.widget.EditText>(R.id.etCorreo)
-        val etContraseña = view.findViewById<android.widget.EditText>(R.id.etContraseña)
-        val spinnerRol = view.findViewById<android.widget.Spinner>(R.id.spinnerRol)
+        val inflater = LayoutInflater.from(requireContext())
+        val dialogView = inflater.inflate(R.layout.dialog_usuario, null)
+
+        val tilNombre = dialogView.findViewById<TextInputLayout>(R.id.tilNombre)
+        val etNombre = dialogView.findViewById<TextInputEditText>(R.id.etNombre)
+        val tilCorreo = dialogView.findViewById<TextInputLayout>(R.id.tilCorreo)
+        val etCorreo = dialogView.findViewById<TextInputEditText>(R.id.etCorreo)
+        val tilContrasena = dialogView.findViewById<TextInputLayout>(R.id.tilContrasena)
+        val etContrasena = dialogView.findViewById<TextInputEditText>(R.id.etContrasena)
+        val tilConfirmarContrasena = dialogView.findViewById<TextInputLayout>(R.id.tilConfirmarContrasena)
+        val etConfirmarContrasena = dialogView.findViewById<TextInputEditText>(R.id.etConfirmarContrasena)
+
+        val tilRol = dialogView.findViewById<TextInputLayout>(R.id.tilRol)
+        val autoCompleteTextViewRol = dialogView.findViewById<AutoCompleteTextView>(R.id.autoCompleteTextViewRol)
+
+        val btnGuardar = dialogView.findViewById<MaterialButton>(R.id.btnGuardar)
+        val btnCancelar = dialogView.findViewById<MaterialButton>(R.id.btnCancelar)
 
         etNombre.setText(usuario.nombre)
         etCorreo.setText(usuario.correo)
-        etContraseña.setText(usuario.contraseña)
+        etContrasena.setText(usuario.contraseña)
+        etConfirmarContrasena.setText(usuario.contraseña)
 
-        val roles = listOf("admin", "usuario")
-        val adapterSpinner = android.widget.ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, roles)
-        adapterSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerRol.adapter = adapterSpinner
-        spinnerRol.setSelection(roles.indexOf(usuario.rol)) // Selecciona el rol actual del usuario
+        val adapterRoles = ArrayAdapter(requireContext(), R.layout.list_item_dropdown, ROLES)
+        autoCompleteTextViewRol.setAdapter(adapterRoles)
 
-        androidx.appcompat.app.AlertDialog.Builder(requireContext())
-            .setTitle("Editar Usuario")
-            .setView(view)
-            .setPositiveButton("Actualizar") { _, _ ->
-                val nombre = etNombre.text.toString().trim()
-                val correo = etCorreo.text.toString().trim()
-                val contraseña = etContraseña.text.toString().trim()
-                val rol = spinnerRol.selectedItem.toString()
+        val rolIndex = ROLES.indexOf(usuario.rol)
+        if (rolIndex != -1) {
+            autoCompleteTextViewRol.setText(ROLES[rolIndex], false)
+        } else {
+            autoCompleteTextViewRol.setText(ROLES[0], false)
+        }
 
-                if (nombre.isNotEmpty() && correo.isNotEmpty() && contraseña.isNotEmpty()) {
+        val alertDialog = AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .create()
+
+        btnGuardar.setOnClickListener {
+            val nombre = etNombre.text.toString().trim()
+            val correo = etCorreo.text.toString().trim()
+            val contraseña = etContrasena.text.toString().trim()
+            val confirmarContraseña = etConfirmarContrasena.text.toString().trim()
+            val rol = autoCompleteTextViewRol.text.toString().lowercase()
+
+            var isValid = true
+
+            if (nombre.isEmpty()) { tilNombre.error = "El nombre es obligatorio"; isValid = false } else { tilNombre.error = null }
+            if (correo.isEmpty()) { tilCorreo.error = "El correo es obligatorio"; isValid = false }
+            else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches()) { tilCorreo.error = "Formato de correo no válido"; isValid = false }
+            else { tilCorreo.error = null }
+            if (contraseña.isEmpty()) { tilContrasena.error = "La contraseña es obligatoria"; isValid = false }
+            else if (contraseña.length < 6) { tilContrasena.error = "La contraseña debe tener al menos 6 caracteres"; isValid = false }
+            else { tilContrasena.error = null }
+            if (confirmarContraseña.isEmpty()) { tilConfirmarContrasena.error = "Confirma la contraseña"; isValid = false }
+            else if (contraseña != confirmarContraseña) { tilConfirmarContrasena.error = "Las contraseñas no coinciden"; isValid = false }
+            else { tilConfirmarContrasena.error = null }
+            if (rol.isEmpty() || !ROLES.contains(rol)) { tilRol.error = "Debes seleccionar un rol"; isValid = false } else { tilRol.error = null }
+
+            if (isValid) {
+                if (correo != usuario.correo && daoUsuario(requireContext()).existeCorreo(correo)) {
+                    tilCorreo.error = "El correo ya está en uso"
+                } else {
+                    // **Asegurarse de mantener isGoogleUser en la actualización (Prioridad 4)**
                     val usuarioActualizado = usuario.copy(
                         nombre = nombre,
                         correo = correo,
                         contraseña = contraseña,
-                        rol = rol
+                        rol = rol,
+                        isGoogleUser = usuario.isGoogleUser // Mantiene el valor original de isGoogleUser
                     )
                     val dao = daoUsuario(requireContext())
                     val actualizado = dao.actualizarUsuario(usuarioActualizado)
                     if (actualizado) {
                         Toast.makeText(requireContext(), "Usuario actualizado", Toast.LENGTH_SHORT).show()
                         cargarUsuarios()
+                        alertDialog.dismiss()
                     } else {
                         Toast.makeText(requireContext(), "Error al actualizar", Toast.LENGTH_SHORT).show()
                     }
-                } else {
-                    Toast.makeText(requireContext(), "Todos los campos son obligatorios", Toast.LENGTH_SHORT).show()
                 }
             }
-            .setNegativeButton("Cancelar", null)
-            .show()
+        }
+
+        btnCancelar.setOnClickListener {
+            alertDialog.dismiss()
+        }
+
+        alertDialog.show()
     }
 }
-

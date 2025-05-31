@@ -5,90 +5,111 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
     android:background="@color/colorBackground"
-    tools:context=".fragments.LoginFragment"> <TextView
-    android:id="@+id/textViewLoginTitle"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Inicio de Sesión"
-    android:textSize="28sp"
-    android:textStyle="bold"
-    android:textColor="@color/colorPrimaryVariant"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    android:layout_marginTop="48dp" />
+    android:padding="24dp"
+    tools:context=".fragments.LoginFragment">
 
-    <EditText
-        android:id="@+id/editTextEmailOrUser"
-        android:layout_width="0dp"
+    <TextView
+        android:id="@+id/textViewLoginTitle"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:background="@drawable/input_background"
-        android:hint="Correo Electrónico o Usuario"
-        android:inputType="textEmailAddress"
-        android:padding="12dp"
-        android:textColor="@color/text_color_primary"
-        android:textColorHint="@color/input_hint_color"
+        android:text="Inicio de Sesión"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:textColor="@color/colorPrimary"
+        app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewLoginTitle" />
+        android:layout_marginTop="64dp" /> <com.google.android.material.textfield.TextInputLayout
+    android:id="@+id/tilEmailOrUser"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="32dp"
+    android:hint="Correo Electrónico o Usuario"
+    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/textViewLoginTitle">
 
-    <EditText
-        android:id="@+id/editTextPassword"
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/editTextEmailOrUser"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textEmailAddress" />
+
+</com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilPassword"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:background="@drawable/input_background"
         android:hint="Contraseña"
-        android:inputType="textPassword"
-        android:padding="12dp"
-        android:textColor="@color/text_color_primary"
-        android:textColorHint="@color/input_hint_color"
+        app:endIconMode="password_toggle"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextEmailOrUser" />
+        app:layout_constraintTop_toBottomOf="@+id/tilEmailOrUser">
 
-    <Button
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonLogin"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:backgroundTint="@color/button_background_primary"
-        android:padding="12dp"
+        android:layout_marginTop="32dp"
         android:text="Iniciar Sesión"
-        android:textColor="@color/button_text_primary"
+        android:paddingVertical="14dp"
         android:textSize="18sp"
+        android:textStyle="bold"
+        app:cornerRadius="8dp"
+        android:backgroundTint="@color/button_background_primary"
+        android:textColor="@color/button_text_primary"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextPassword" />
-    <Button
+        app:layout_constraintTop_toBottomOf="@+id/tilPassword" />
+
+    <com.google.android.material.button.MaterialButton
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/buttonGoogleSignIn"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:textSize="18sp"
+        android:layout_marginTop="16dp"
+        android:paddingVertical="14dp"
         android:text="Iniciar sesión con Google"
+        android:textColor="@color/text_color_primary"
+        android:textSize="16sp"
+        app:backgroundTint="@android:color/white"
+        app:cornerRadius="8dp"
+        app:icon="@drawable/ic_google"
+        app:iconGravity="textStart"
+        app:iconTint="@null"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/buttonLogin" />
+        app:layout_constraintTop_toBottomOf="@id/buttonLogin"
+        app:strokeColor="@color/text_color_secondary"
+        app:strokeWidth="1dp"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"  />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonGoToRegister"
-        style="@style/Widget.Material3.Button.TextButton"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="32dp"
         android:text="¿No tienes cuenta? Regístrate aquí"
-        android:textColor="@color/colorPrimary"
+        android:textColor="@color/colorPrimaryVariant"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/buttonGoogleSignIn" />
-
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

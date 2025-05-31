@@ -61,7 +61,7 @@ dependencies {
     implementation("androidx.credentials:credentials-play-services-auth:1.6.0-alpha01")
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
     implementation("com.google.android.gms:play-services-location:21.0.1")
-
+    implementation("com.google.android.material:material:1.12.0")
 
 
 

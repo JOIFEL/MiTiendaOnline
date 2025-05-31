@@ -14,10 +14,12 @@ import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialException
 import androidx.lifecycle.lifecycleScope
+import com.example.mitiendaonline.data.model.Usuario
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 class LoginFragment : Fragment() {
 
@@ -91,10 +93,11 @@ class LoginFragment : Fragment() {
 
     private fun iniciarSesionConGoogle() {
         val credentialManager = CredentialManager.create(requireContext())
+        val serverClientId = "770052901333-h1u1luh6o0e8r4cfplbeu7ghg11teth5.apps.googleusercontent.com" // Tu Client ID
 
         val googleIdOption = GetGoogleIdOption.Builder()
-            .setFilterByAuthorizedAccounts(false)
-            .setServerClientId("770052901333-h1u1luh6o0e8r4cfplbeu7ghg11teth5.apps.googleusercontent.com")
+            .setFilterByAuthorizedAccounts(false) // Mostrar todas las cuentas de Google
+            .setServerClientId(serverClientId)
             .build()
 
         val request = GetCredentialRequest.Builder()
@@ -110,21 +113,83 @@ class LoginFragment : Fragment() {
 
                 val credential = result.credential
                 if (credential is GoogleIdTokenCredential) {
-                    val idToken = credential.idToken
-                    val displayName = credential.displayName
-                    val email = credential.id
+                    // val idToken = credential.idToken // Puedes usar esto para verificar en tu backend si tuvieras uno
+                    val displayName = credential.displayName ?: "Usuario Google" // Nombre del usuario
+                    val email = credential.id // El ID es el correo electrónico del usuario de Google
 
-                    Toast.makeText(requireContext(), "Bienvenido $displayName", Toast.LENGTH_SHORT).show()
+                    if (email == null) {
+                        Toast.makeText(requireContext(), "No se pudo obtener el correo de Google.", Toast.LENGTH_SHORT).show()
+                        return@launch
+                    }
 
-                    parentFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, ProductosFragment())
-                        .commit()
+                    val dao = daoUsuario(requireContext())
+                    val existingUser = dao.getUserByEmail(email)
+
+                    if (existingUser == null) {
+                        // El usuario de Google no existe en nuestra DB local, lo registramos
+                        val newUser = Usuario(
+                            nombre = displayName,
+                            correo = email,
+                            contraseña = UUID.randomUUID().toString(), // Contraseña ficticia/aleatoria para usuarios de Google
+                            rol = "cliente", // Rol por defecto para usuarios de Google
+                            isGoogleUser = true // ¡Marcar como usuario de Google!
+                        )
+                        val insertedId = dao.insertar(newUser)
+                        if (insertedId != -1L) {
+                            Toast.makeText(requireContext(), "Bienvenido, $displayName!", Toast.LENGTH_SHORT).show()
+                            navigateToRoleFragment(newUser.rol) // Navegar según el rol del nuevo usuario
+                        } else {
+                            Toast.makeText(requireContext(), "Error al registrar usuario de Google.", Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        // El usuario de Google ya existe en nuestra DB local
+                        if (!existingUser.isGoogleUser) {
+                            // Si existía como usuario normal, lo actualizamos para marcarlo como de Google
+                            val updatedUser = existingUser.copy(isGoogleUser = true)
+                            val updated = dao.actualizarUsuario(updatedUser)
+                            if (updated) {
+                                Toast.makeText(requireContext(), "Bienvenido de nuevo, ${existingUser.nombre}!", Toast.LENGTH_SHORT).show()
+                                navigateToRoleFragment(updatedUser.rol) // Navegar con el rol actualizado
+                            } else {
+                                Toast.makeText(requireContext(), "Error al actualizar usuario de Google.", Toast.LENGTH_SHORT).show()
+                            }
+                        } else {
+                            // Ya es un usuario de Google existente
+                            Toast.makeText(requireContext(), "Bienvenido de nuevo, ${existingUser.nombre}!", Toast.LENGTH_SHORT).show()
+                            navigateToRoleFragment(existingUser.rol) // Navegar con el rol existente
+                        }
+                    }
+
                 } else {
-                    Toast.makeText(requireContext(), "Credencial no válida", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Credencial no válida. Intenta de nuevo.", Toast.LENGTH_SHORT).show()
                 }
 
             } catch (e: GetCredentialException) {
-                Toast.makeText(requireContext(), "Error de autenticación: ${e.message}", Toast.LENGTH_SHORT).show()
+                // Manejo de errores de autenticación (ej. usuario cancela, error de red)
+                Toast.makeText(requireContext(), "Error de autenticación: ${e.message}", Toast.LENGTH_LONG).show()
+                // Log.e("LoginFragment", "Error de CredentialManager", e) // Para depuración
+            } catch (e: Exception) {
+                // Otros errores inesperados
+                Toast.makeText(requireContext(), "Ocurrió un error inesperado: ${e.message}", Toast.LENGTH_LONG).show()
+                // Log.e("LoginFragment", "Error inesperado", e)
+            }
+        }
+    }
+
+    private fun navigateToRoleFragment(rol: String) {
+        when (rol) {
+            "admin" -> {
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, AdminFragment())
+                    .commit()
+            }
+            "cliente" -> {
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, ProductosFragment())
+                    .commit()
+            }
+            else -> {
+                Toast.makeText(requireContext(), "Rol desconocido", Toast.LENGTH_SHORT).show()
             }
         }
     }

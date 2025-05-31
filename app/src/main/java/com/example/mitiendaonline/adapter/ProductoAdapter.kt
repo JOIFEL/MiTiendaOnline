@@ -9,33 +9,59 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mitiendaonline.R
 import com.example.mitiendaonline.data.model.Producto
+import com.google.android.material.button.MaterialButton // Importa MaterialButton
+import com.google.android.material.imageview.ShapeableImageView // Importa ShapeableImageView
+import com.example.mitiendaonline.databinding.ItemProductBinding // Asumo que estás usando ViewBinding para item_product.xml
+import java.text.NumberFormat // Para formatear el precio
+import java.util.Locale // Para el Locale de Colombia
 
-class ProductoAdapter(private val listaProductos: MutableList<Producto>, private val onAddToCart: (Producto) -> Unit
-) :
-    RecyclerView.Adapter<ProductoAdapter.ProductoViewHolder>() {
+class ProductoAdapter(
+    private val listaProductos: MutableList<Producto>,
+    private val onAddToCartClicked: (Producto) -> Unit, // Renombrado para mayor claridad
+    private val onItemClicked: (Producto) -> Unit // Nuevo callback para el clic en la tarjeta completa
+) : RecyclerView.Adapter<ProductoAdapter.ProductoViewHolder>() {
 
-    inner class ProductoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val imageViewProductImage: ImageView = itemView.findViewById(R.id.imageViewProductImage)
-        private val textViewProductName: TextView = itemView.findViewById(R.id.textViewProductName)
-        private val textViewProductPrice: TextView = itemView.findViewById(R.id.textViewProductPrice)
+    // Formateador de moneda para Pesos Colombianos
+    private val currencyFormat: NumberFormat = NumberFormat.getCurrencyInstance(Locale("es", "CO")).apply {
+        // Puedes establecer el símbolo de moneda explícitamente si el Locale no lo da por defecto
+        // try { currency = java.util.Currency.Currency.getInstance("COP") } catch (e: Exception) { e.printStackTrace() }
+    }
 
-        private val addToCart: ImageView = itemView.findViewById(R.id.imageViewAddToCart)
+    inner class ProductoViewHolder(private val binding: ItemProductBinding) : // Usamos ViewBinding
+        RecyclerView.ViewHolder(binding.root) { // binding.root es la vista raíz (MaterialCardView)
 
         fun bind(producto: Producto) {
+            // Imagen del producto
             if (!producto.imagenUri.isNullOrEmpty()) {
-                imageViewProductImage.setImageURI(Uri.parse(producto.imagenUri))
+                binding.imageViewProductImage.setImageURI(Uri.parse(producto.imagenUri))
             } else {
-                imageViewProductImage.setImageResource(R.drawable.placeholder_image)
+                binding.imageViewProductImage.setImageResource(R.drawable.ic_image_placeholder) // Usa el placeholder
             }
-            addToCart.setOnClickListener { onAddToCart(producto) }
-            textViewProductName.text = producto.nombre
-            textViewProductPrice.text = "$${producto.precio}"
+
+            // Nombre del producto
+            binding.textViewProductName.text = producto.nombre
+
+            // Precio del producto formateado a Pesos Colombianos
+            binding.textViewProductPrice.text = currencyFormat.format(producto.precio)
+
+            // --- LISTENERS ---
+
+            // Listener para el botón "Añadir al Carrito" (si tu item_product.xml tiene uno)
+            binding.imageViewAddToCart.setOnClickListener { // Asegúrate que este es el ID correcto
+                onAddToCartClicked(producto)
+            }
+
+            // Listener para la tarjeta completa del ítem (para navegar a detalles del producto)
+            binding.root.setOnClickListener {
+                onItemClicked(producto)
+            }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductoViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_product, parent, false)
-        return ProductoViewHolder(view)
+        // Infla el layout item_product.xml usando ViewBinding
+        val binding = ItemProductBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ProductoViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ProductoViewHolder, position: Int) {
