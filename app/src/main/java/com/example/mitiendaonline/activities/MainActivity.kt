@@ -10,11 +10,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModelProvider // Importa ViewModelProvider
+import androidx.lifecycle.ViewModelProvider
 import com.example.mitiendaonline.R
 import com.example.mitiendaonline.data.model.Coordenadas
 import com.example.mitiendaonline.data.model.MainViewModel
-import com.example.mitiendaonline.fragments.InicioFragment // Ejemplo: si InicioFragment es el primero
+import com.example.mitiendaonline.fragments.InicioFragment
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 
@@ -94,7 +94,7 @@ class MainActivity : AppCompatActivity() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
             ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Log.w("MainActivity", "getLastKnownLocation: Permisos no concedidos. No se puede obtener la ubicación.")
-            mainViewModel.ubicacionActual.postValue(null) // Notificar al ViewModel que la ubicación es nula
+            mainViewModel.ubicacionActual.postValue(null)
             return
         }
 
