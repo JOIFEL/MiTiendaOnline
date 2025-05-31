@@ -48,7 +48,7 @@ class UsuarioFragment : Fragment() {
                 }
             },
             onEliminar = { usuario ->
-                // **También considera bloquear la eliminación para usuarios de Google si es necesario**
+
                 if (usuario.correo == "admin@admin.com") {
                     Toast.makeText(requireContext(), "Este usuario no puede ser eliminado.", Toast.LENGTH_SHORT).show()
                 } else {
@@ -83,7 +83,7 @@ class UsuarioFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        cargarUsuarios() // Recargar usuarios para reflejar posibles cambios (añadir/editar/eliminar)
+        cargarUsuarios()
     }
 
     private fun cargarUsuarios() {
@@ -141,7 +141,7 @@ class UsuarioFragment : Fragment() {
             if (rol.isEmpty() || !ROLES.contains(rol)) { tilRol.error = "Debes seleccionar un rol"; isValid = false } else { tilRol.error = null }
 
             if (isValid) {
-                // **Verificación para admin@admin.com en la creación (Prioridad 4)**
+
                 if (correo == "admin@admin.com") {
                     Toast.makeText(requireContext(), "No puedes crear un usuario con el correo admin por defecto.", Toast.LENGTH_SHORT).show()
                 } else {
@@ -172,8 +172,7 @@ class UsuarioFragment : Fragment() {
     }
 
     private fun mostrarDialogoEditarUsuario(usuario: Usuario) {
-        // La verificación de isGoogleUser ya se realiza en la lambda onEditar del adaptador.
-        // Aquí solo se muestra el diálogo si la verificación previa fue exitosa.
+
 
         val inflater = LayoutInflater.from(requireContext())
         val dialogView = inflater.inflate(R.layout.dialog_usuario, null)
@@ -237,13 +236,13 @@ class UsuarioFragment : Fragment() {
                 if (correo != usuario.correo && daoUsuario(requireContext()).existeCorreo(correo)) {
                     tilCorreo.error = "El correo ya está en uso"
                 } else {
-                    // **Asegurarse de mantener isGoogleUser en la actualización (Prioridad 4)**
+
                     val usuarioActualizado = usuario.copy(
                         nombre = nombre,
                         correo = correo,
                         contraseña = contraseña,
                         rol = rol,
-                        isGoogleUser = usuario.isGoogleUser // Mantiene el valor original de isGoogleUser
+                        isGoogleUser = usuario.isGoogleUser
                     )
                     val dao = daoUsuario(requireContext())
                     val actualizado = dao.actualizarUsuario(usuarioActualizado)

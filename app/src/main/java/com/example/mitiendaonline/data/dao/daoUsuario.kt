@@ -3,7 +3,7 @@ package com.example.mitiendaonline.data.dao
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
-import android.database.sqlite.SQLiteDatabase
+
 import com.example.mitiendaonline.data.database.MiTiendaOnline
 import com.example.mitiendaonline.data.model.Usuario
 
@@ -16,7 +16,7 @@ class daoUsuario(private val context: Context) {
   * @param usuario El objeto Usuario a insertar.
   * @return true si la inserción fue exitosa, false de lo contrario.
   */
- fun insertar(usuario: Usuario): Long { // Cambia el retorno a Long para el ID de la fila
+ fun insertar(usuario: Usuario): Long {
   val db = dbHelper.writableDatabase
   val valores = ContentValues().apply {
    put("nombre", usuario.nombre)
@@ -25,9 +25,9 @@ class daoUsuario(private val context: Context) {
    put("rol", usuario.rol)
    put("isGoogleUser", if (usuario.isGoogleUser) 1 else 0)
   }
-  val resultado = db.insert("tb_usuarios", null, valores) // resultado es el row ID (Long)
+  val resultado = db.insert("tb_usuarios", null, valores)
   db.close()
-  return resultado // Devuelve el ID generado
+  return resultado
  }
 
 
@@ -54,15 +54,15 @@ class daoUsuario(private val context: Context) {
      correo = cursor.getString(cursor.getColumnIndexOrThrow("correo")),
      contraseña = cursor.getString(cursor.getColumnIndexOrThrow("contraseña")),
      rol = cursor.getString(cursor.getColumnIndexOrThrow("rol")),
-     isGoogleUser = cursor.getInt(cursor.getColumnIndexOrThrow("isGoogleUser")) == 1 // Lee el campo
+     isGoogleUser = cursor.getInt(cursor.getColumnIndexOrThrow("isGoogleUser")) == 1
     )
    }
   } catch (e: Exception) {
-   e.printStackTrace() // Log del error
-   // Aquí podrías manejar el error de forma más sofisticada si fuera necesario
+   e.printStackTrace()
+
   } finally {
-   cursor?.close() // Asegura que el cursor se cierre
-   db.close() // Asegura que la base de datos se cierre
+   cursor?.close()
+   db.close()
   }
   return usuario
  }
@@ -107,8 +107,7 @@ class daoUsuario(private val context: Context) {
   * @return true si la actualización fue exitosa, false de lo contrario.
   */
  fun actualizarUsuario(usuario: Usuario): Boolean {
-  // La restricción para 'admin@admin.com' ya está en el UsuarioFragment.
-  // Si el usuario.isGoogleUser es true, la edición ya se bloqueó en el Fragment.
+
   val db = dbHelper.writableDatabase
   val valores = ContentValues().apply {
    put("nombre", usuario.nombre)

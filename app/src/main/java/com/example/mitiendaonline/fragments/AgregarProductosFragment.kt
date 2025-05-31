@@ -3,7 +3,7 @@ package com.example.mitiendaonline.fragments
 import android.Manifest
 import android.app.Activity
 import android.content.Intent
-import android.content.pm.PackageManager
+
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -14,25 +14,25 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts // Nuevo
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
+
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import com.example.mitiendaonline.R
 import com.example.mitiendaonline.data.dao.daoProducto
 import com.example.mitiendaonline.data.model.Producto
-import com.google.android.material.button.MaterialButton // Importa MaterialButton
-import com.google.android.material.imageview.ShapeableImageView // Importa ShapeableImageView
-import com.google.android.material.textfield.TextInputEditText // Importa TextInputEditText
-import com.google.android.material.textfield.TextInputLayout // Importa TextInputLayout
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.imageview.ShapeableImageView
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import java.io.File
 import java.io.IOException
-import java.text.NumberFormat // Importa NumberFormat
+
 import java.text.SimpleDateFormat
 import java.util.*
 
 class AgregarProductosFragment : Fragment() {
 
-    // UI elements (actualizado para Material Design)
+
     private lateinit var tilProductName: TextInputLayout
     private lateinit var etName: TextInputEditText
     private lateinit var tilProductDescription: TextInputLayout
@@ -41,16 +41,16 @@ class AgregarProductosFragment : Fragment() {
     private lateinit var etPrice: TextInputEditText
     private lateinit var tilProductStock: TextInputLayout
     private lateinit var etStock: TextInputEditText
-    private lateinit var ivImage: ShapeableImageView // Cambiado a ShapeableImageView
-    private lateinit var btnSaveProduct: MaterialButton // Cambiado a MaterialButton
-    private lateinit var btnSelectImage: MaterialButton // Cambiado a MaterialButton
-    private lateinit var btnCancel: MaterialButton // Añadido el botón de cancelar
+    private lateinit var ivImage: ShapeableImageView
+    private lateinit var btnSaveProduct: MaterialButton
+    private lateinit var btnSelectImage: MaterialButton
+    private lateinit var btnCancel: MaterialButton
 
-    // Image and permissions
-    private var currentImageUri: Uri? = null // Renombrado para claridad
-    private lateinit var currentPhotoPath: String // Para la ruta de la foto de la cámara
 
-    // Uso de ActivityResultLauncher para permisos y resultados de actividad (API moderna)
+    private var currentImageUri: Uri? = null
+    private lateinit var currentPhotoPath: String
+
+
     private val requestCameraPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
@@ -70,7 +70,7 @@ class AgregarProductosFragment : Fragment() {
                 val copiedUri = copyUriToInternalStorage(uri)
                 currentImageUri = copiedUri
                 ivImage.setImageURI(currentImageUri)
-                ivImage.scaleType = ImageView.ScaleType.CENTER_CROP // Ajustar scaleType para imagen real
+                ivImage.scaleType = ImageView.ScaleType.CENTER_CROP
             }
         }
     }
@@ -79,14 +79,14 @@ class AgregarProductosFragment : Fragment() {
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            // imageUri ya debería contener la URI de la foto tomada
+
             ivImage.setImageURI(currentImageUri)
-            ivImage.scaleType = ImageView.ScaleType.CENTER_CROP // Ajustar scaleType para imagen real
+            ivImage.scaleType = ImageView.ScaleType.CENTER_CROP
         } else {
-            // Si la foto no se tomó o se canceló, limpiar la URI temporal y el placeholder
+
             currentImageUri = null
             ivImage.setImageResource(R.drawable.ic_image_placeholder)
-            ivImage.scaleType = ImageView.ScaleType.CENTER_INSIDE // Volver a scaleType para placeholder
+            ivImage.scaleType = ImageView.ScaleType.CENTER_INSIDE
         }
     }
 
@@ -94,17 +94,17 @@ class AgregarProductosFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_agregar_productos, container, false) // Asegúrate que el XML sea dialog_agregar_producto.xml
+        val view = inflater.inflate(R.layout.fragment_agregar_productos, container, false)
         setupUI(view)
         setupListeners()
-        // Establece el placeholder inicial para la imagen
+
         ivImage.setImageResource(R.drawable.ic_image_placeholder)
         ivImage.scaleType = ImageView.ScaleType.CENTER_INSIDE
         return view
     }
 
     private fun setupUI(view: View) {
-        // Inicializar los TextInputLayout y TextInputEditText
+
         tilProductName = view.findViewById(R.id.tilProductName)
         etName = view.findViewById(R.id.etName)
         tilProductDescription = view.findViewById(R.id.tilProductDescription) // Nuevo ID
@@ -114,23 +114,23 @@ class AgregarProductosFragment : Fragment() {
         tilProductStock = view.findViewById(R.id.tilProductStock)
         etStock = view.findViewById(R.id.etStock)
 
-        ivImage = view.findViewById(R.id.ivImage) // Sigue siendo ImageView, pero ahora ShapeableImageView
-        btnSaveProduct = view.findViewById(R.id.btnSaveProduct) // MaterialButton
-        btnSelectImage = view.findViewById(R.id.btnSelectImage) // MaterialButton
-        btnCancel = view.findViewById(R.id.btnCancel) // Nuevo botón de cancelar
+        ivImage = view.findViewById(R.id.ivImage)
+        btnSaveProduct = view.findViewById(R.id.btnSaveProduct)
+        btnSelectImage = view.findViewById(R.id.btnSelectImage)
+        btnCancel = view.findViewById(R.id.btnCancel)
     }
 
     private fun setupListeners() {
         btnSelectImage.setOnClickListener { showImagePickerDialog() }
 
         btnSaveProduct.setOnClickListener {
-            if (validateInputs()) { // Llamar a la función de validación
+            if (validateInputs()) {
                 saveProduct()
             }
         }
 
         btnCancel.setOnClickListener {
-            // Cierra el fragmento o regresa a la pantalla anterior
+
             requireActivity().supportFragmentManager.popBackStack()
         }
     }
@@ -190,8 +190,8 @@ class AgregarProductosFragment : Fragment() {
     private fun saveProduct() {
         val nombre = etName.text.toString().trim()
         val descripcion = etDescription.text.toString().trim()
-        val precio = etPrice.text.toString().toDouble() // Ya validado como Double
-        val stock = etStock.text.toString().toInt() // Ya validado como Int
+        val precio = etPrice.text.toString().toDouble()
+        val stock = etStock.text.toString().toInt()
 
         val producto = Producto(0, nombre, descripcion, precio, stock, currentImageUri?.toString())
         val dao = daoProducto(requireContext())
@@ -199,13 +199,13 @@ class AgregarProductosFragment : Fragment() {
 
         if (result > 0) {
             Toast.makeText(context, "Producto agregado exitosamente", Toast.LENGTH_SHORT).show()
-            requireActivity().supportFragmentManager.popBackStack() // Regresar al fragmento anterior
+            requireActivity().supportFragmentManager.popBackStack()
         } else {
             Toast.makeText(context, "Error al guardar el producto", Toast.LENGTH_SHORT).show()
         }
     }
 
-    // Selector de imagen: galería o cámara
+
     private fun showImagePickerDialog() {
         val options = arrayOf("Elegir de galería", "Tomar foto")
         AlertDialog.Builder(requireContext())
@@ -213,7 +213,7 @@ class AgregarProductosFragment : Fragment() {
             .setItems(options) { _, which ->
                 when (which) {
                     0 -> pickImageFromGallery()
-                    1 -> requestCameraPermission() // Usar la nueva función de solicitud de permiso
+                    1 -> requestCameraPermission()
                 }
             }
             .show()
@@ -241,7 +241,7 @@ class AgregarProductosFragment : Fragment() {
         photoFile?.also {
             val photoUri: Uri = FileProvider.getUriForFile(
                 requireContext(),
-                "${requireContext().packageName}.provider", // Asegúrate de que el provider esté configurado en tu manifest
+                "${requireContext().packageName}.provider",
                 it
             )
             currentImageUri = photoUri // Guarda la URI temporal aquí
@@ -256,18 +256,18 @@ class AgregarProductosFragment : Fragment() {
         val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
         val storageDir: File? = requireContext().getExternalFilesDir(null)
         return File.createTempFile(
-            "JPEG_${timeStamp}_", /* prefix */
-            ".jpg", /* suffix */
-            storageDir /* directory */
+            "JPEG_${timeStamp}_",
+            ".jpg",
+            storageDir
         ).apply {
-            currentPhotoPath = absolutePath // Guarda la ruta absoluta del archivo temporal
+            currentPhotoPath = absolutePath
         }
     }
 
     private fun copyUriToInternalStorage(uri: Uri): Uri? {
         return try {
             val inputStream = requireContext().contentResolver.openInputStream(uri)
-            val file = createImageFile() // Crea un nuevo archivo para la copia
+            val file = createImageFile()
             val outputStream = file.outputStream()
 
             inputStream?.copyTo(outputStream)

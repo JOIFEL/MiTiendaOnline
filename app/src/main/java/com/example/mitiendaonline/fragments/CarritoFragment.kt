@@ -25,8 +25,6 @@ class CarritoFragment : Fragment() {
     private lateinit var carritoAdapter: CarritoAdapter
 
     private val currencyFormat: NumberFormat = NumberFormat.getCurrencyInstance(Locale("es", "CO")).apply {
-        // Opcional: Puedes establecer el símbolo de moneda explícitamente
-        // try { currency = java.util.Currency.getInstance("COP") } catch (e: Exception) { e.printStackTrace() }
     }
 
     override fun onCreateView(
@@ -111,8 +109,12 @@ class CarritoFragment : Fragment() {
             if (listaItemsCarrito.isEmpty()) {
                 Toast.makeText(requireContext(), "El carrito está vacío. ¡Añade productos para pagar!", Toast.LENGTH_SHORT).show()
             } else {
+                // **Navegación a ConfirmarDireccionFragment**
+                requireActivity().supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, ConfirmarDireccionFragment()) // Reemplaza al fragmento de ConfirmarDireccion
+                    .addToBackStack(null) // Permite regresar al carrito
+                    .commit()
                 Toast.makeText(requireContext(), "Procediendo al pago...", Toast.LENGTH_SHORT).show()
-                // Aquí iría la lógica para iniciar el proceso de pago
             }
         }
     }

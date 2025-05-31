@@ -6,11 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import com.example.mitiendaonline.R
 import com.example.mitiendaonline.data.dao.daoUsuario
 import com.example.mitiendaonline.data.model.Usuario
 import com.example.mitiendaonline.databinding.FragmentRegistroBinding
-import com.example.mitiendaonline.fragments.LoginFragment // Asegúrate de que esta importación esté correcta
+
 
 class RegistroFragment : Fragment() {
 
@@ -20,7 +19,7 @@ class RegistroFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View { // Cambiado a View sin ? porque binding.root nunca será nulo
+    ): View {
         _binding = FragmentRegistroBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -29,25 +28,23 @@ class RegistroFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.buttonRegister.setOnClickListener {
-            // Recoger textos y limpiar espacios
+
             val nombre = binding.editTextFullName.text.toString().trim()
             val correo = binding.editTextEmail.text.toString().trim()
-            val contraseña = binding.editTextPassword.text.toString() // No trim en contraseña por si hay espacios intencionales
+            val contraseña = binding.editTextPassword.text.toString()
             val confirmarContraseña = binding.editTextConfirmPassword.text.toString()
 
-            var isValid = true // Flag para controlar si todas las validaciones pasan
+            var isValid = true
 
-            // --- Validaciones con feedback en TextInputLayout ---
 
-            // Validación de Nombre Completo
             if (nombre.isEmpty()) {
                 binding.tilFullName.error = "El nombre es obligatorio"
                 isValid = false
             } else {
-                binding.tilFullName.error = null // Limpiar error si es válido
+                binding.tilFullName.error = null
             }
 
-            // Validación de Correo Electrónico
+
             if (correo.isEmpty()) {
                 binding.tilEmail.error = "El correo es obligatorio"
                 isValid = false
@@ -58,7 +55,7 @@ class RegistroFragment : Fragment() {
                 binding.tilEmail.error = null
             }
 
-            // Validación de Contraseña
+
             if (contraseña.isEmpty()) {
                 binding.tilPassword.error = "La contraseña es obligatoria"
                 isValid = false
@@ -69,7 +66,7 @@ class RegistroFragment : Fragment() {
                 binding.tilPassword.error = null
             }
 
-            // Validación de Confirmar Contraseña
+
             if (confirmarContraseña.isEmpty()) {
                 binding.tilConfirmPassword.error = "Confirma la contraseña"
                 isValid = false
@@ -80,39 +77,39 @@ class RegistroFragment : Fragment() {
                 binding.tilConfirmPassword.error = null
             }
 
-            // Si todas las validaciones de UI pasan, proceder con la lógica de negocio
+
             if (isValid) {
                 val dao = daoUsuario(requireContext())
 
-                // **Bloquear registro de admin por defecto (Prioridad de lógica)**
+
                 if (correo == "admin@admin.com") {
                     Toast.makeText(requireContext(), "No puedes registrar un usuario con el correo admin por defecto.", Toast.LENGTH_LONG).show()
-                    binding.tilEmail.error = "Correo reservado" // Mostrar error visual
+                    binding.tilEmail.error = "Correo reservado"
                     return@setOnClickListener
                 }
 
-                // Verificar si el correo ya está registrado
+
                 if (dao.existeCorreo(correo)) {
                     binding.tilEmail.error = "Este correo ya está registrado"
                     Toast.makeText(requireContext(), "Este correo ya está registrado", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
 
-                // Crear el objeto Usuario (por defecto isGoogleUser es false)
+
                 val nuevoUsuario = Usuario(
                     nombre = nombre,
                     correo = correo,
                     contraseña = contraseña,
-                    rol = "cliente", // El rol por defecto para los registros es "cliente"
-                    isGoogleUser = false // Por defecto, no es un usuario de Google
+                    rol = "cliente",
+                    isGoogleUser = false
                 )
 
-                // Insertar el usuario y verificar el ID retornado (Prioridad de ID)
+
                 val insertadoId = dao.insertar(nuevoUsuario)
 
-                if (insertadoId != -1L) { // Comprobar si la inserción fue exitosa
+                if (insertadoId != -1L) {
                     Toast.makeText(requireContext(), "¡Registro exitoso!", Toast.LENGTH_SHORT).show()
-                    // Navegar de regreso a la pantalla de Login
+
                     requireActivity().supportFragmentManager.popBackStack()
                 } else {
                     Toast.makeText(requireContext(), "Error al registrar. Intenta de nuevo.", Toast.LENGTH_LONG).show()
@@ -120,15 +117,15 @@ class RegistroFragment : Fragment() {
             }
         }
 
-        // Configurar OnClickListener para el botón "Ya tienes cuenta? Inicia Sesión"
+
         binding.buttonGoToLogin.setOnClickListener {
-            // Simplemente regresa al fragmento anterior en la pila de retroceso (que debería ser LoginFragment)
+
             requireActivity().supportFragmentManager.popBackStack()
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null // Limpiar la referencia al binding para evitar fugas de memoria
+        _binding = null
     }
 }

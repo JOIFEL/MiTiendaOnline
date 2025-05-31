@@ -31,10 +31,10 @@ class DashboardAdapter(private val listaProductos: MutableList<Producto>) :
             binding.buttonDelete.setOnClickListener {
                 val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
-                    // Elimina de la base de datos
+
                     val dao = daoProducto(binding.root.context)
                     dao.eliminar(producto.id)
-                    // Elimina de la lista y notifica
+
                     listaProductos.removeAt(position)
                     notifyItemRemoved(position)
                 }

@@ -93,10 +93,10 @@ class LoginFragment : Fragment() {
 
     private fun iniciarSesionConGoogle() {
         val credentialManager = CredentialManager.create(requireContext())
-        val serverClientId = "770052901333-h1u1luh6o0e8r4cfplbeu7ghg11teth5.apps.googleusercontent.com" // Tu Client ID
+        val serverClientId = "770052901333-h1u1luh6o0e8r4cfplbeu7ghg11teth5.apps.googleusercontent.com"
 
         val googleIdOption = GetGoogleIdOption.Builder()
-            .setFilterByAuthorizedAccounts(false) // Mostrar todas las cuentas de Google
+            .setFilterByAuthorizedAccounts(false)
             .setServerClientId(serverClientId)
             .build()
 
@@ -113,9 +113,9 @@ class LoginFragment : Fragment() {
 
                 val credential = result.credential
                 if (credential is GoogleIdTokenCredential) {
-                    // val idToken = credential.idToken // Puedes usar esto para verificar en tu backend si tuvieras uno
-                    val displayName = credential.displayName ?: "Usuario Google" // Nombre del usuario
-                    val email = credential.id // El ID es el correo electrónico del usuario de Google
+
+                    val displayName = credential.displayName ?: "Usuario Google"
+                    val email = credential.id
 
                     if (email == null) {
                         Toast.makeText(requireContext(), "No se pudo obtener el correo de Google.", Toast.LENGTH_SHORT).show()
@@ -126,37 +126,37 @@ class LoginFragment : Fragment() {
                     val existingUser = dao.getUserByEmail(email)
 
                     if (existingUser == null) {
-                        // El usuario de Google no existe en nuestra DB local, lo registramos
+
                         val newUser = Usuario(
                             nombre = displayName,
                             correo = email,
-                            contraseña = UUID.randomUUID().toString(), // Contraseña ficticia/aleatoria para usuarios de Google
-                            rol = "cliente", // Rol por defecto para usuarios de Google
-                            isGoogleUser = true // ¡Marcar como usuario de Google!
+                            contraseña = UUID.randomUUID().toString(),
+                            rol = "cliente",
+                            isGoogleUser = true
                         )
                         val insertedId = dao.insertar(newUser)
                         if (insertedId != -1L) {
                             Toast.makeText(requireContext(), "Bienvenido, $displayName!", Toast.LENGTH_SHORT).show()
-                            navigateToRoleFragment(newUser.rol) // Navegar según el rol del nuevo usuario
+                            navigateToRoleFragment(newUser.rol)
                         } else {
                             Toast.makeText(requireContext(), "Error al registrar usuario de Google.", Toast.LENGTH_SHORT).show()
                         }
                     } else {
-                        // El usuario de Google ya existe en nuestra DB local
+
                         if (!existingUser.isGoogleUser) {
-                            // Si existía como usuario normal, lo actualizamos para marcarlo como de Google
+
                             val updatedUser = existingUser.copy(isGoogleUser = true)
                             val updated = dao.actualizarUsuario(updatedUser)
                             if (updated) {
                                 Toast.makeText(requireContext(), "Bienvenido de nuevo, ${existingUser.nombre}!", Toast.LENGTH_SHORT).show()
-                                navigateToRoleFragment(updatedUser.rol) // Navegar con el rol actualizado
+                                navigateToRoleFragment(updatedUser.rol)
                             } else {
                                 Toast.makeText(requireContext(), "Error al actualizar usuario de Google.", Toast.LENGTH_SHORT).show()
                             }
                         } else {
                             // Ya es un usuario de Google existente
                             Toast.makeText(requireContext(), "Bienvenido de nuevo, ${existingUser.nombre}!", Toast.LENGTH_SHORT).show()
-                            navigateToRoleFragment(existingUser.rol) // Navegar con el rol existente
+                            navigateToRoleFragment(existingUser.rol)
                         }
                     }
 
@@ -165,13 +165,13 @@ class LoginFragment : Fragment() {
                 }
 
             } catch (e: GetCredentialException) {
-                // Manejo de errores de autenticación (ej. usuario cancela, error de red)
+
                 Toast.makeText(requireContext(), "Error de autenticación: ${e.message}", Toast.LENGTH_LONG).show()
-                // Log.e("LoginFragment", "Error de CredentialManager", e) // Para depuración
+
             } catch (e: Exception) {
-                // Otros errores inesperados
+
                 Toast.makeText(requireContext(), "Ocurrió un error inesperado: ${e.message}", Toast.LENGTH_LONG).show()
-                // Log.e("LoginFragment", "Error inesperado", e)
+
             }
         }
     }

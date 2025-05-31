@@ -14,7 +14,7 @@ class CarritoAdapter(
     private val onItemRemoved: (CartItem) -> Unit,
     private val onQuantityIncreased: (CartItem) -> Unit,
     private val onQuantityDecreased: (CartItem) -> Unit,
-    // Nuevo: Callback cuando se toca la tarjeta completa (para ver detalles del producto)
+
     private val onItemClicked: (CartItem) -> Unit
 ) : RecyclerView.Adapter<CarritoAdapter.CarritoViewHolder>() {
 
@@ -22,12 +22,11 @@ class CarritoAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         private val currencyFormat: NumberFormat = NumberFormat.getCurrencyInstance(Locale("es", "CO")).apply {
-            // Opcional: Configurar el símbolo de moneda si es necesario
-            // try { currency = java.util.Currency.getInstance("COP") } catch (e: Exception) { e.printStackTrace() }
+
         }
 
         fun bind(cartItem: CartItem) {
-            // Imagen del producto
+
             val uriString = cartItem.producto.imagenUri
             if (uriString != null && uriString.isNotEmpty()) {
                 binding.imageViewCartItemImage.setImageURI(android.net.Uri.parse(uriString))
@@ -35,25 +34,22 @@ class CarritoAdapter(
                 binding.imageViewCartItemImage.setImageResource(R.drawable.ic_image_placeholder)
             }
 
-            // Nombre del producto
+
             binding.textViewCartItemName.text = cartItem.producto.nombre
 
-            // Precio unitario formateado
+
             binding.textViewCartItemPricePerUnit.text = "Precio unitario: ${currencyFormat.format(cartItem.producto.precio)}"
 
-            // Cantidad
+
             binding.textViewQuantity.text = cartItem.cantidad.toString()
 
-            // Subtotal formateado (precio unitario * cantidad)
+
             binding.textViewCartItemSubtotal.text = "Subtotal: ${currencyFormat.format(cartItem.subtotal)}"
 
-            // --- LISTENERS ---
 
-            // 1. Listener para la tarjeta completa (para ver detalles del producto)
+
             binding.root.setOnClickListener {
-                // Asegúrate de que el clic no venga de los botones internos
-                // Si haces clic en el nombre o en el espacio vacío, se activa este listener.
-                // Los botones +/- y eliminar interceptarán sus propios clics.
+
                 onItemClicked(cartItem)
             }
 
@@ -72,7 +68,7 @@ class CarritoAdapter(
                 }
             }
 
-            // 3. Listener para el botón de eliminar
+
             binding.buttonRemoveItem.setOnClickListener {
                 val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {

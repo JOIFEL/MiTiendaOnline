@@ -13,7 +13,7 @@ import com.example.mitiendaonline.R
 import com.example.mitiendaonline.databinding.FragmentProductosBinding
 import com.example.mitiendaonline.data.dao.daoProducto
 import com.example.mitiendaonline.adapter.ProductoAdapter
-import com.example.mitiendaonline.data.model.Producto // Importa el modelo Producto
+import com.example.mitiendaonline.data.model.Producto
 import com.example.mitiendaonline.util.CarritoManager
 
 class ProductosFragment : Fragment() {
@@ -38,19 +38,19 @@ class ProductosFragment : Fragment() {
         val dao = daoProducto(requireContext())
         val productos = dao.obtenerTodos()
 
-        // Inicializa el adaptador con DOS callbacks: uno para añadir y otro para el clic del ítem
+
         productoAdapter = ProductoAdapter(
             productos.toMutableList(),
-            onAddToCartClicked = { producto -> // Cuando el usuario toca el botón de "Añadir"
+            onAddToCartClicked = { producto ->
                 CarritoManager.agregarAlCarrito(requireContext(), producto)
                 updateCartBadge()
                 Toast.makeText(requireContext(), "${producto.nombre} añadido al carrito.", Toast.LENGTH_SHORT).show()
             },
-            onItemClicked = { producto -> // Cuando el usuario toca la tarjeta completa (para ver detalles)
-                // Navegar a la pantalla de detalles del producto
+            onItemClicked = { producto ->
+
                 requireActivity().supportFragmentManager.beginTransaction()
                     .replace(R.id.fragment_container, DetalleProductoFragment.newInstance(producto.id))
-                    .addToBackStack(null) // Esto permite regresar al ProductosFragment
+                    .addToBackStack(null)
                     .commit()
             }
         )
